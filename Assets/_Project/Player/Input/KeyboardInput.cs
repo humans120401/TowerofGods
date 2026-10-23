@@ -12,7 +12,7 @@ namespace RT.Player.Input
     ///
     /// 키 배치는 전부 Inspector에서 바꿀 수 있다.
     /// </summary>
-    [AddComponentMenu("역전의 탑/입력/키보드 입력")]
+    [AddComponentMenu("Tower of Gods/입력/키보드 입력")]
     public class KeyboardInput : MonoBehaviour, IPlayerInput
     {
         [Header("이동")]

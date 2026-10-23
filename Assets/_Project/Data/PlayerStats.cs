@@ -8,11 +8,11 @@ namespace RT.Data
     /// **코드에 매직 넘버를 두지 않는다.** 밸런싱은 전부 이 에셋에서 한다.
     /// DDA가 조정하는 값(보스 패턴)과 고정하는 값(여기)의 경계가 파일 단위로 드러난다.
     ///
-    /// 만들기: Project 창 우클릭 ▸ Create ▸ 역전의 탑 ▸ 플레이어 스탯
+    /// 만들기: Project 창 우클릭 ▸ Create ▸ Tower of Gods ▸ 플레이어 스탯
     /// </summary>
     [CreateAssetMenu(
         fileName = "PlayerStats",
-        menuName = "역전의 탑/플레이어 스탯",
+        menuName = "Tower of Gods/플레이어 스탯",
         order = 0)]
     public class PlayerStats : ScriptableObject
     {

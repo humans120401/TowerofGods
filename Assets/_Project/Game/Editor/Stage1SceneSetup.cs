@@ -14,7 +14,7 @@ namespace RT.Game.EditorTools
     /// 손으로 만들면 오브젝트 8개에 컴포넌트를 붙이고 값을 맞춰야 하는데,
     /// 한 군데만 틀려도 원인을 찾기 어렵다. 자동으로 만들면 늘 같은 상태에서 시작한다.
     ///
-    /// 메뉴: 역전의 탑 ▸ 1단계 테스트 씬 만들기
+    /// 메뉴: Tower of Gods ▸ 1단계 테스트 씬 만들기
     ///
     /// 다시 눌러도 안전하다 — 씬을 새로 만들어 덮어쓴다.
     /// </summary>
@@ -23,7 +23,7 @@ namespace RT.Game.EditorTools
         private const string ScenePath = "Assets/Scenes/Stage1_Movement.unity";
         private const string StatsPath = "Assets/_Project/Data/PlayerStats.asset";
 
-        [MenuItem("역전의 탑/1단계 테스트 씬 만들기", false, 1)]
+        [MenuItem("Tower of Gods/1단계 테스트 씬 만들기", false, 1)]
         public static void Build()
         {
             if (!EditorUtility.DisplayDialog(
@@ -67,14 +67,33 @@ namespace RT.Game.EditorTools
             var existing = AssetDatabase.LoadAssetAtPath<PlayerStats>(StatsPath);
             if (existing != null) return existing;
 
-            var stats = ScriptableObject.CreateInstance<PlayerStats>();
-
             Directory.CreateDirectory("Assets/_Project/Data");
-            AssetDatabase.CreateAsset(stats, StatsPath);
+
+            var created = ScriptableObject.CreateInstance<PlayerStats>();
+            AssetDatabase.CreateAsset(created, StatsPath);
             AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+
+            // 중요: 방금 만든 메모리 인스턴스를 그대로 쓰면 안 된다.
+            //
+            // 씬은 '디스크에 저장된 에셋'만 참조할 수 있다.
+            // 메모리 인스턴스를 연결하면 씬을 저장할 때 그 참조가 조용히 버려지고,
+            // Play 했을 때 null 로 나온다. (이 버그로 한 번 당했다)
+            //
+            // 그래서 디스크에서 다시 읽어 '진짜 에셋' 참조를 가져온다.
+            var persisted = AssetDatabase.LoadAssetAtPath<PlayerStats>(StatsPath);
+
+            if (persisted == null)
+            {
+                Debug.LogError(
+                    $"[1단계 세팅] 스탯 에셋을 만들지 못했습니다: {StatsPath}\n" +
+                    "Project 창에서 우클릭 ▸ Create ▸ Tower of Gods ▸ 플레이어 스탯 으로 " +
+                    "직접 만든 뒤 Player 오브젝트의 Stats 칸에 끌어다 놓아 주세요.");
+                return created;
+            }
 
             Debug.Log($"[1단계 세팅] 플레이어 스탯을 새로 만들었습니다: {StatsPath}");
-            return stats;
+            return persisted;
         }
 
         // ── 카메라 ──
@@ -186,6 +205,18 @@ namespace RT.Game.EditorTools
             // 발 크기는 스케일이 걸린 로컬 기준이라 작게 잡는다.
             so.FindProperty("groundCheckSize").vector2Value = new Vector2(0.9f, 0.1f);
             so.ApplyModifiedPropertiesWithoutUndo();
+
+            // 주입이 실제로 됐는지 확인한다.
+            // SerializedObject 는 조용히 실패할 수 있어서, 눈으로 확인할 수단을 둔다.
+            var verify = new SerializedObject(brain);
+
+            if (verify.FindProperty("stats").objectReferenceValue == null)
+            {
+                Debug.LogError(
+                    "[1단계 세팅] Stats 연결에 실패했습니다.\n" +
+                    "Hierarchy 에서 Player 를 고르고, Inspector 의 Player Brain ▸ Stats 칸에 " +
+                    "Assets/_Project/Data/PlayerStats 를 끌어다 놓아 주세요.");
+            }
 
             return brain;
         }

@@ -12,7 +12,7 @@ namespace RT.Game
     /// UI 에셋을 안 쓰고 OnGUI로 그린다. 씬 세팅이 필요 없기 때문이다.
     /// 정식 HUD는 나중에 RT.UI에서 만든다.
     /// </summary>
-    [AddComponentMenu("역전의 탑/디버그/플레이어 상태 표시")]
+    [AddComponentMenu("Tower of Gods/디버그/플레이어 상태 표시")]
     public class PlayerDebugOverlay : MonoBehaviour
     {
         [SerializeField] private PlayerBrain player;

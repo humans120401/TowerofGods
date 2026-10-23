@@ -18,12 +18,12 @@ namespace RT.Player
     /// 이 파일이 커지기 시작하면 뭔가 잘못 들어온 것이다.
     /// </summary>
     [RequireComponent(typeof(Rigidbody2D))]
-    [AddComponentMenu("역전의 탑/플레이어/플레이어 브레인")]
+    [AddComponentMenu("Tower of Gods/플레이어/플레이어 브레인")]
     public class PlayerBrain : MonoBehaviour
     {
         [Header("필수 연결")]
 
-        [Tooltip("모든 수치가 들어 있는 에셋. Create ▸ 역전의 탑 ▸ 플레이어 스탯")]
+        [Tooltip("모든 수치가 들어 있는 에셋. Create ▸ Tower of Gods ▸ 플레이어 스탯")]
         [SerializeField] private PlayerStats stats;
 
         [Tooltip("입력 구현체. 비워 두면 같은 오브젝트에서 찾는다")]
@@ -62,11 +62,15 @@ namespace RT.Player
 
             if (stats == null)
             {
-                Debug.LogError(
-                    "[PlayerBrain] Stats 가 비어 있습니다. " +
-                    "Create ▸ 역전의 탑 ▸ 플레이어 스탯 으로 만들어 연결해 주세요.", this);
-                enabled = false;
-                return;
+                // 멈추지 않는다. 설정이 빠졌다고 아무것도 못 하면 원인을 찾기가 더 어렵다.
+                // 설계서 기본값으로 굴리면서 경고만 남긴다.
+                stats = ScriptableObject.CreateInstance<PlayerStats>();
+
+                Debug.LogWarning(
+                    "[PlayerBrain] Stats 가 비어 있어 설계서 기본값으로 진행합니다.\n" +
+                    "이 값은 저장되지 않습니다. 제대로 쓰려면:\n" +
+                    "  Hierarchy 에서 Player 선택 ▸ Inspector 의 Player Brain ▸ Stats 칸에\n" +
+                    "  Assets/_Project/Data/PlayerStats 를 끌어다 놓으세요.", this);
             }
 
             _input = ResolveInput();
