@@ -1,0 +1,7 @@
+{
+    "name": "RT.DDA.Model",
+    "rootNamespace": "RT.DDA.Model",
+    "references": [],
+    "autoReferenced": true,
+    "noEngineReferences": true
+}

@@ -1,0 +1,6 @@
+{
+    "name": "RT.Backend",
+    "rootNamespace": "RT.Backend",
+    "references": ["RT.Core", "RT.Data", "RT.Telemetry"],
+    "autoReferenced": true
+}

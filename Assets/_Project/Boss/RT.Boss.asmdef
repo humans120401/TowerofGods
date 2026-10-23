@@ -1,0 +1,6 @@
+{
+    "name": "RT.Boss",
+    "rootNamespace": "RT.Boss",
+    "references": ["RT.Core", "RT.Data"],
+    "autoReferenced": true
+}

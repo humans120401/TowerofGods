@@ -1,0 +1,6 @@
+{
+    "name": "RT.Player",
+    "rootNamespace": "RT.Player",
+    "references": ["RT.Core", "RT.Data"],
+    "autoReferenced": true
+}

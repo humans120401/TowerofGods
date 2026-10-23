@@ -1,0 +1,6 @@
+{
+    "name": "RT.DDA",
+    "rootNamespace": "RT.DDA",
+    "references": ["RT.Core", "RT.Data", "RT.Telemetry", "RT.DDA.Model"],
+    "autoReferenced": true
+}

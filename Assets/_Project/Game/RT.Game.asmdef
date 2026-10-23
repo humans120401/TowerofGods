@@ -1,0 +1,9 @@
+{
+    "name": "RT.Game",
+    "rootNamespace": "RT.Game",
+    "references": [
+        "RT.Core", "RT.Data", "RT.Player", "RT.Boss",
+        "RT.Telemetry", "RT.Backend", "RT.DDA", "RT.DDA.Model", "RT.UI"
+    ],
+    "autoReferenced": true
+}

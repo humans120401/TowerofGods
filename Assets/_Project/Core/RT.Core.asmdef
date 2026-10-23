@@ -1,0 +1,7 @@
+{
+    "name": "RT.Core",
+    "rootNamespace": "RT.Core",
+    "references": [],
+    "autoReferenced": true,
+    "noEngineReferences": false
+}

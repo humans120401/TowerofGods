@@ -1,0 +1,6 @@
+{
+    "name": "RT.UI",
+    "rootNamespace": "RT.UI",
+    "references": ["RT.Core", "RT.Data"],
+    "autoReferenced": true
+}
