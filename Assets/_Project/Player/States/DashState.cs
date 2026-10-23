@@ -1,3 +1,4 @@
+using RT.Player.Systems;
 using UnityEngine;
 
 namespace RT.Player.States
@@ -35,7 +36,8 @@ namespace RT.Player.States
             float h = Ctx.Input.Horizontal;
             Ctx.DashDirection = Mathf.Abs(h) > 0.01f ? Mathf.Sign(h) : Ctx.Facing;
 
-            Ctx.IsInvincible = true;
+            // 무적은 대시 길이(0.2s)보다 짧게(0.15s) 건다. 타이머가 저절로 꺼 준다.
+            Ctx.Invincible.For(InvincibilitySource.Dash, Ctx.Stats.dashInvincibleTime);
 
             // 대시 중에는 중력을 끈다. 공중 대시가 아래로 처지지 않게.
             _originalGravityScale = Ctx.Body.gravityScale;
@@ -50,11 +52,7 @@ namespace RT.Player.States
         {
             _elapsed += deltaTime;
 
-            // 무적은 지속보다 짧게 끝난다 — 설계서 2.3
-            if (Ctx.IsInvincible && _elapsed >= Ctx.Stats.dashInvincibleTime)
-            {
-                Ctx.IsInvincible = false;
-            }
+            // 무적 해제는 타이머가 알아서 한다 (설계서 2.3 — 끝 0.05초는 맞는다).
 
             if (_elapsed >= Ctx.Stats.dashDuration)
             {
@@ -76,7 +74,11 @@ namespace RT.Player.States
 
         public override void Exit()
         {
-            Ctx.IsInvincible = false;
+            // **자기 것만** 끈다.
+            // 대시 중 회피 불가 공격에 맞아 피격 무적이 켜져 있을 수 있는데,
+            // 그걸 같이 끄면 다단히트의 뒷 타를 전부 맞는다.
+            Ctx.Invincible.Release(InvincibilitySource.Dash);
+
             Ctx.Body.gravityScale = _originalGravityScale <= 0f
                 ? Ctx.Stats.GravityScale
                 : _originalGravityScale;

@@ -231,32 +231,9 @@ namespace RT.Game.EditorTools
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 
-        // ── 1×1 흰 스프라이트 ──
-        // 아트가 없으므로 코드로 만든다. 크기는 Transform.localScale 로 조절한다.
+        // 흰 사각형은 EditorPrimitives 가 디스크 에셋으로 만들어 준다.
+        // 메모리에서 만든 스프라이트는 씬 저장 때 참조가 버려진다.
 
-        private static Sprite _white;
-
-        private static Sprite WhiteSquare()
-        {
-            if (_white != null) return _white;
-
-            var tex = new Texture2D(8, 8);
-            var pixels = new Color[8 * 8];
-
-            for (int i = 0; i < pixels.Length; i++) pixels[i] = Color.white;
-
-            tex.SetPixels(pixels);
-            tex.Apply();
-            tex.filterMode = FilterMode.Point;
-
-            _white = Sprite.Create(
-                tex,
-                new Rect(0, 0, 8, 8),
-                new Vector2(0.5f, 0.5f),
-                8f);   // pixelsPerUnit = 8 → 1 unit = 1m
-
-            _white.name = "WhiteSquare";
-            return _white;
-        }
+        private static Sprite WhiteSquare() => EditorPrimitives.WhiteSquare();
     }
 }

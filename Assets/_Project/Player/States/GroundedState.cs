@@ -7,6 +7,11 @@ namespace RT.Player.States
     ///
     /// 둘을 나누지 않은 이유: 전환 조건이 "수평 입력이 있나" 하나뿐이라
     /// 상태를 쪼개면 같은 코드가 두 벌이 된다. 애니메이션은 속도를 보고 고르면 된다.
+    ///
+    /// 전환 우선순위가 중요하다.
+    ///   대시 > 패링 > 스킬 > 공격 > 점프
+    /// 대시와 패링을 앞에 둔 이유는 둘 다 '살아남는' 행동이기 때문이다.
+    /// 공격하려다 맞는 것보다 피하려다 공격을 놓치는 쪽이 낫다.
     /// </summary>
     public class GroundedState : PlayerState
     {
@@ -20,25 +25,20 @@ namespace RT.Player.States
 
             Ctx.UpdateFacing(input.Horizontal);
 
-            // 대시 — 지상·공중 공통. 제약(카로스 회피 봉인)이 걸려 있으면 막힌다.
-            if (input.DashPressed && !Ctx.DashBlocked && Ctx.Dash.CanDash)
-            {
-                return PlayerStateId.Dash;
-            }
+            if (WantsDash) return PlayerStateId.Dash;
+            if (WantsParry) return PlayerStateId.Parry;
+            if (TryTakeSkillInput()) return PlayerStateId.Skill;
+            if (WantsAttack) return PlayerStateId.Attack;
 
-            // 점프 — 버퍼와 코요테를 JumpAssist가 이미 판단해 뒀다.
+            // 점프 — 버퍼와 코요테는 JumpAssist 가 이미 판단해 뒀다.
             if (Ctx.Jump.TryConsumeJump())
             {
                 Ctx.SetVerticalVelocity(Ctx.Stats.JumpVelocity);
                 return PlayerStateId.Airborne;
             }
 
-            // 발판에서 걸어 나간 경우.
-            // 코요테 유예는 JumpAssist가 들고 있으므로 여기서는 상태만 바꾼다.
-            if (!Ctx.IsGrounded)
-            {
-                return PlayerStateId.Airborne;
-            }
+            // 발판에서 걸어 나간 경우. 코요테 유예는 JumpAssist 가 들고 있다.
+            if (!Ctx.IsGrounded) return PlayerStateId.Airborne;
 
             return null;
         }
@@ -59,8 +59,7 @@ namespace RT.Player.States
             float next = time <= 0f
                 ? target
                 : Mathf.MoveTowards(
-                    current,
-                    target,
+                    current, target,
                     (Ctx.Stats.moveSpeed / time) * fixedDeltaTime);
 
             Ctx.SetHorizontalVelocity(next);

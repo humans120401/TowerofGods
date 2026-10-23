@@ -85,10 +85,28 @@ namespace RT.Core.Combat
 
     /// <summary>
     /// 보스 공격을 받을 수 있는 대상. 플레이어가 구현한다.
-    /// 보스는 이 인터페이스만 알고, RT.Player 를 참조하지 않는다.
+    ///
+    /// 받는 쪽이 Hit / Parried / Ignored 를 판정해 돌려준다.
+    /// 보스는 그 결과를 보고 경직에 걸릴지 정한다.
+    /// 보스는 이 인터페이스만 알고 RT.Player 를 참조하지 않는다.
     /// </summary>
     public interface IAttackReceiver
     {
         HitResult ReceiveHit(in HitInfo info);
+    }
+
+    /// <summary>
+    /// 플레이어 공격을 받을 수 있는 대상. 보스·허수아비가 구현한다.
+    ///
+    /// IAttackReceiver 와 방향이 반대다.
+    /// 이쪽은 결과를 돌려주지 않는다 — 보스가 패링하는 경우(에텔로스)는
+    /// 보스 쪽에서 따로 처리하고, 플레이어는 "때렸다"까지만 안다.
+    /// </summary>
+    public interface IDamageable
+    {
+        /// <summary>이미 죽었는가. 죽은 대상은 판정에서 제외한다.</summary>
+        bool IsDead { get; }
+
+        void TakeDamage(in HitInfo info);
     }
 }

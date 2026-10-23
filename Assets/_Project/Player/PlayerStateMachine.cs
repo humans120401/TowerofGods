@@ -22,6 +22,15 @@ namespace RT.Player
 
         public PlayerStateId CurrentId => _current?.Id ?? PlayerStateId.Grounded;
 
+        /// <summary>지금 상태가 피격으로 끊기는가. PlayerBrain 이 본다.</summary>
+        public bool CurrentInterruptedByHit => _current == null || _current.InterruptedByHit;
+
+        /// <summary>
+        /// 바깥에서 강제로 상태를 바꾼다. 피격·사망처럼 상태가 거부할 수 없는 경우에만 쓴다.
+        /// 보통의 전환은 Tick 의 반환값으로 한다.
+        /// </summary>
+        public void Force(PlayerStateId next) => Transition(next);
+
         public void Register(PlayerState state)
         {
             _states[state.Id] = state;

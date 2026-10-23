@@ -22,10 +22,14 @@ namespace RT.Player.States
 
             Ctx.UpdateFacing(input.Horizontal);
 
-            if (input.DashPressed && !Ctx.DashBlocked && Ctx.Dash.CanDash)
-            {
-                return PlayerStateId.Dash;
-            }
+            if (WantsDash) return PlayerStateId.Dash;
+            if (WantsParry) return PlayerStateId.Parry;
+
+            // 공중에서도 스킬·공격이 나간다.
+            // 설계서는 Q·E를 '지상에서만'으로 두진 않았으므로 일단 허용하고,
+            // 플레이해 보고 공중 난사가 문제가 되면 그때 막는다.
+            if (TryTakeSkillInput()) return PlayerStateId.Skill;
+            if (WantsAttack) return PlayerStateId.Attack;
 
             // 코요테 유예로 뒤늦게 나가는 점프.
             // 발판을 막 벗어났을 때 여기로 들어오므로, 여전히 점프할 수 있어야 한다.
