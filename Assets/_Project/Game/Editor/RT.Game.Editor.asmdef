@@ -1,0 +1,11 @@
+{
+    "name": "RT.Game.Editor",
+    "rootNamespace": "RT.Game.EditorTools",
+    "references": [
+        "RT.Core", "RT.Data", "RT.Player", "RT.Boss",
+        "RT.Telemetry", "RT.Backend", "RT.DDA", "RT.DDA.Model",
+        "RT.UI", "RT.Game"
+    ],
+    "includePlatforms": ["Editor"],
+    "autoReferenced": true
+}

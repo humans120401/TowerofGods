@@ -3,7 +3,7 @@
     "rootNamespace": "RT.Tests",
     "references": [
         "UnityEngine.TestRunner", "UnityEditor.TestRunner",
-        "RT.Core", "RT.Data", "RT.Telemetry", "RT.DDA.Model"
+        "RT.Core", "RT.Data", "RT.Player", "RT.Telemetry", "RT.DDA.Model"
     ],
     "includePlatforms": ["Editor"],
     "precompiledReferences": ["nunit.framework.dll"],
