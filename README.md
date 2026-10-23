@@ -94,6 +94,21 @@ Core ← Data ← {Player, Boss, Telemetry, UI}
 
 ---
 
+## 패키지에 관한 메모
+
+`Packages/manifest.json` 에 **버전을 직접 적은 패키지는 최소한으로 둔다.**
+
+2D Animation 패키지를 `10.1.4` 로 박았다가 컴파일이 통째로 깨진 적이 있다.
+그 버전 코드가 `Object.GetInstanceID()` 를 쓰는데 Unity 6000.6 에서 폐기돼
+`GetEntityId()` 로 바뀌었기 때문이다. 패키지 안에서 에러가 18개 났다.
+
+→ **나중에 패키지가 필요하면 `manifest.json` 을 손으로 고치지 말고,
+Window ▸ Package Manager 에서 설치한다.** 유니티가 호환되는 버전을 알아서 고른다.
+
+2D 리깅(2D Animation)은 8단계 이후 아트를 붙일 때 그렇게 추가한다.
+
+---
+
 ## 비밀값
 
 Supabase URL·키는 **커밋하지 않는다.** `.gitignore`가 막고 있다.
