@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dead5a4d4f3c63143bc0be3c206e5c0c, type: 3}
+  m_Name: PlayerStats
+  m_EditorClassIdentifier: RT.Data::RT.Data.PlayerStats
+  maxHealth: 100
+  baseAttackPower: 10
+  moveSpeed: 7
+  airMoveSpeed: 6.3
+  groundAccelTime: 0.06
+  groundDecelTime: 0.05
+  airAccelTime: 0.12
+  jumpHeight: 1.8
+  jumpApexTime: 0.3333
+  fallGravityMultiplier: 1
+  maxFallSpeed: 25
+  variableJumpCut: 0.5
+  coyoteTime: 0.1
+  jumpBufferTime: 0.12
+  dashDistance: 4
+  dashDuration: 0.2
+  dashInvincibleTime: 0.15
+  dashMaxStacks: 2
+  dashRechargeTime: 2.5
+  dashMinInterval: 0.3
+  hitStunDuration: 0.15
+  invincibleAfterHit: 0.35

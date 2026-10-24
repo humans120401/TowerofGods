@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c95c948aab411943a45bf360ff2ba8c, type: 3}
+  m_Name: "Skill_E_\uCC98\uD615\uBCA0\uAE30"
+  m_EditorClassIdentifier: RT.Data::RT.Data.SkillData
+  slot: 2
+  displayName: "\uCC98\uD615 \uBCA0\uAE30"
+  cooldown: 15
+  windup: 0.7
+  totalDuration: 1.3
+  damageCoefficient: 3
+  shape: 0
+  boxSize: {x: 2.5, y: 2.2}
+  radius: 2.5
+  forwardOffset: 1.5
+  knockbackLevel: 2
+  dashDistance: 0
+  canMoveWhileCasting: 0
+  invincibleWhileCasting: 0
+  cancelledOnHit: 1
+  cancelCooldownRatio: 0.5
+  animationState: 
+  vfxPrefab: {fileID: 0}
