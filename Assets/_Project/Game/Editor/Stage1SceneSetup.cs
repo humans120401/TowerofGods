@@ -37,7 +37,12 @@ namespace RT.Game.EditorTools
 
             if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
 
+            // 에셋을 먼저 전부 디스크에 확정시킨다 — 2단계 세팅과 같은 이유.
             var stats = LoadOrCreateStats();
+            EditorPrimitives.WhiteSquare();
+
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
 
             var scene = EditorSceneManager.NewScene(
                 NewSceneSetup.DefaultGameObjects,
@@ -51,8 +56,12 @@ namespace RT.Game.EditorTools
             Directory.CreateDirectory("Assets/Scenes");
             EditorSceneManager.SaveScene(scene, ScenePath);
 
+            // 저장 뒤에 연결이 살아남았는지 확인한다. 1단계는 스킬이 없다.
+            bool ok = SceneWiring.VerifyAndRepair(ScenePath, stats, null);
+
             EditorUtility.DisplayDialog(
-                "완성",
+                ok ? "완성" : "완성 — 다만 확인할 게 있습니다",
+                (ok ? "" : "연결 일부가 저장되지 않았습니다. Console 을 보세요.\n\n") +
                 "Stage1_Movement 씬을 만들었습니다.\n\n" +
                 "Play 를 누르고 Game 창을 한 번 클릭한 뒤\n" +
                 "A / D 이동, Space 점프, Shift 대시를 해 보세요.\n\n" +

@@ -40,8 +40,14 @@ namespace RT.Game.EditorTools
 
             if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
 
+            // 에셋을 **전부 먼저** 만들고 디스크에 확정시킨다.
+            // 씬을 만드는 도중에 에셋 임포트가 끼어들면 방금 꽂은 참조가 버려질 수 있다.
             var stats = SkillAssetFactory.LoadOrCreate<PlayerStats>(StatsPath);
             var skills = SkillAssetFactory.CreateAll();
+            EditorPrimitives.WhiteSquare();
+
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
 
             var scene = EditorSceneManager.NewScene(
                 NewSceneSetup.DefaultGameObjects, NewSceneMode.Single);
@@ -60,8 +66,13 @@ namespace RT.Game.EditorTools
             Directory.CreateDirectory("Assets/Scenes");
             EditorSceneManager.SaveScene(scene, ScenePath);
 
+            // 저장된 파일을 다시 열어 연결이 살아남았는지 확인한다.
+            // 여기서 끊겨 있으면 Play 를 눌러야만 알게 되므로 지금 잡는다.
+            bool ok = SceneWiring.VerifyAndRepair(ScenePath, stats, skills);
+
             EditorUtility.DisplayDialog(
-                "완성",
+                ok ? "완성" : "완성 — 다만 확인할 게 있습니다",
+                (ok ? "" : "연결 일부가 저장되지 않았습니다. Console 을 보세요.\n\n") +
                 "Stage2_Combat 씬을 만들었습니다.\n\n" +
                 "Z 공격 · F 패링 · Q/W/E 스킬\n\n" +
                 "오른쪽 허수아비가 색으로 예고합니다 (네 종류를 돌아가며 씁니다):\n" +
