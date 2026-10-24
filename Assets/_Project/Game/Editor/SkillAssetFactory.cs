@@ -23,8 +23,19 @@ namespace RT.Game.EditorTools
         private const string WPath = DataDir + "/Skill_W_회전베기.asset";
         private const string EPath = DataDir + "/Skill_E_처형베기.asset";
 
-        /// <summary>Q · W · E 순서로 돌려준다. 디스크에서 읽은 것이라 씬에 바로 연결해도 된다.</summary>
-        public static SkillData[] CreateAll()
+        /// <summary>Q · W · E 에셋 경로. 씬에 꽂기 직전에 이 경로로 다시 읽어야 한다.</summary>
+        public static readonly string[] SkillPaths = { QPath, WPath, EPath };
+
+        /// <summary>
+        /// 세 에셋을 만들고 설계서 값으로 맞춘다. **참조를 돌려주지 않는다.**
+        ///
+        /// 여기서 돌려준 참조를 들고 있다가 씬을 새로 만들면,
+        /// NewScene 이 "아무도 안 쓰는 에셋"으로 보고 메모리에서 내려 버린다.
+        /// 그 뒤에 꽂으면 씬에는 빈 참조(fileID: 0)가 저장된다 — 실제로 당했다.
+        ///
+        /// 그래서 만들기와 읽기를 분리했다. 읽기는 LoadAll 로, 씬을 만든 **뒤에** 한다.
+        /// </summary>
+        public static void CreateAll()
         {
             ConfigureQ(LoadOrCreate<SkillData>(QPath));
             ConfigureW(LoadOrCreate<SkillData>(WPath));
@@ -32,15 +43,49 @@ namespace RT.Game.EditorTools
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
+        }
 
-            // 메모리 인스턴스를 씬에 연결하면 저장할 때 참조가 조용히 버려진다.
-            // 반드시 디스크에서 다시 읽어서 넘긴다.
-            return new[]
+        /// <summary>
+        /// 디스크에서 지금 막 읽어 온 Q · W · E.
+        /// **씬에 꽂기 바로 직전에** 부른다.
+        /// </summary>
+        public static SkillData[] LoadAll()
+        {
+            var result = new SkillData[SkillPaths.Length];
+
+            for (int i = 0; i < SkillPaths.Length; i++)
             {
-                AssetDatabase.LoadAssetAtPath<SkillData>(QPath),
-                AssetDatabase.LoadAssetAtPath<SkillData>(WPath),
-                AssetDatabase.LoadAssetAtPath<SkillData>(EPath),
-            };
+                result[i] = LoadPersisted<SkillData>(SkillPaths[i]);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// 경로에서 읽되, **디스크에 실제로 있는 에셋인지 확인한다.**
+        ///
+        /// AssetDatabase.Contains 가 false 면 메모리에만 있는 유령이다.
+        /// 그걸 씬에 꽂으면 저장할 때 조용히 버려지므로, 여기서 잡고 null 을 돌려준다.
+        /// </summary>
+        public static T LoadPersisted<T>(string path) where T : ScriptableObject
+        {
+            var asset = AssetDatabase.LoadAssetAtPath<T>(path);
+
+            if (asset == null)
+            {
+                Debug.LogError($"[에셋] {path} 를 읽지 못했습니다.");
+                return null;
+            }
+
+            if (!AssetDatabase.Contains(asset))
+            {
+                Debug.LogError(
+                    $"[에셋] {path} 가 디스크 에셋이 아닙니다. " +
+                    "씬에 꽂아도 저장되지 않습니다.");
+                return null;
+            }
+
+            return asset;
         }
 
         /// <summary>Q 돌진 베기 — 거리를 좁히는 기술. 쿨 6s · 180%</summary>

@@ -26,12 +26,31 @@ namespace RT.Game.EditorTools
         /// <summary>
         /// 저장된 씬을 다시 열어 PlayerBrain 의 연결을 확인한다.
         /// 끊긴 게 있으면 다시 붙이고 저장한다.
+        ///
+        /// **에셋을 참조가 아니라 경로로 받는다.** 호출하는 쪽이 들고 있던 참조는
+        /// 이미 빈 껍데기일 수 있어서, 그걸 다시 꽂아 봐야 똑같이 버려진다.
+        /// 씬을 연 뒤에 이 안에서 직접 읽는다.
         /// </summary>
         /// <returns>전부 멀쩡하면 true</returns>
         public static bool VerifyAndRepair(
-            string scenePath, PlayerStats stats, SkillData[] skills)
+            string scenePath, string statsPath, string[] skillPaths)
         {
             var scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Single);
+
+            // 씬을 연 **뒤에** 읽는다. 순서가 뒤바뀌면 이 함수도 같은 버그를 반복한다.
+            var stats = SkillAssetFactory.LoadPersisted<PlayerStats>(statsPath);
+
+            SkillData[] skills = null;
+
+            if (skillPaths != null)
+            {
+                skills = new SkillData[skillPaths.Length];
+
+                for (int i = 0; i < skillPaths.Length; i++)
+                {
+                    skills[i] = SkillAssetFactory.LoadPersisted<SkillData>(skillPaths[i]);
+                }
+            }
 
             var brain = Object.FindAnyObjectByType<PlayerBrain>();
 

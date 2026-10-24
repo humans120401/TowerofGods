@@ -37,8 +37,8 @@ namespace RT.Game.EditorTools
 
             if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
 
-            // 에셋을 먼저 전부 디스크에 확정시킨다 — 2단계 세팅과 같은 이유.
-            var stats = LoadOrCreateStats();
+            // 1) 에셋을 먼저 만들어 디스크에 확정시킨다. 참조는 들고 가지 않는다.
+            SkillAssetFactory.LoadOrCreate<PlayerStats>(StatsPath);
             EditorPrimitives.WhiteSquare();
 
             AssetDatabase.SaveAssets();
@@ -47,6 +47,11 @@ namespace RT.Game.EditorTools
             var scene = EditorSceneManager.NewScene(
                 NewSceneSetup.DefaultGameObjects,
                 NewSceneMode.Single);
+
+            // 2) 씬을 만든 **뒤에** 디스크에서 다시 읽는다.
+            //    NewScene 이 안 쓰는 에셋을 메모리에서 내리기 때문에,
+            //    앞에서 읽어 둔 참조를 꽂으면 저장할 때 조용히 버려진다.
+            var stats = SkillAssetFactory.LoadPersisted<PlayerStats>(StatsPath);
 
             BuildCamera();
             BuildGround();
@@ -57,7 +62,7 @@ namespace RT.Game.EditorTools
             EditorSceneManager.SaveScene(scene, ScenePath);
 
             // 저장 뒤에 연결이 살아남았는지 확인한다. 1단계는 스킬이 없다.
-            bool ok = SceneWiring.VerifyAndRepair(ScenePath, stats, null);
+            bool ok = SceneWiring.VerifyAndRepair(ScenePath, StatsPath, null);
 
             EditorUtility.DisplayDialog(
                 ok ? "완성" : "완성 — 다만 확인할 게 있습니다",
@@ -67,42 +72,6 @@ namespace RT.Game.EditorTools
                 "A / D 이동, Space 점프, Shift 대시를 해 보세요.\n\n" +
                 "좌상단 숫자가 안 보이면 F1 을 누르세요.",
                 "확인");
-        }
-
-        // ── 플레이어 스탯 에셋 ──
-
-        private static PlayerStats LoadOrCreateStats()
-        {
-            var existing = AssetDatabase.LoadAssetAtPath<PlayerStats>(StatsPath);
-            if (existing != null) return existing;
-
-            Directory.CreateDirectory("Assets/_Project/Data");
-
-            var created = ScriptableObject.CreateInstance<PlayerStats>();
-            AssetDatabase.CreateAsset(created, StatsPath);
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
-
-            // 중요: 방금 만든 메모리 인스턴스를 그대로 쓰면 안 된다.
-            //
-            // 씬은 '디스크에 저장된 에셋'만 참조할 수 있다.
-            // 메모리 인스턴스를 연결하면 씬을 저장할 때 그 참조가 조용히 버려지고,
-            // Play 했을 때 null 로 나온다. (이 버그로 한 번 당했다)
-            //
-            // 그래서 디스크에서 다시 읽어 '진짜 에셋' 참조를 가져온다.
-            var persisted = AssetDatabase.LoadAssetAtPath<PlayerStats>(StatsPath);
-
-            if (persisted == null)
-            {
-                Debug.LogError(
-                    $"[1단계 세팅] 스탯 에셋을 만들지 못했습니다: {StatsPath}\n" +
-                    "Project 창에서 우클릭 ▸ Create ▸ Tower of Gods ▸ 플레이어 스탯 으로 " +
-                    "직접 만든 뒤 Player 오브젝트의 Stats 칸에 끌어다 놓아 주세요.");
-                return created;
-            }
-
-            Debug.Log($"[1단계 세팅] 플레이어 스탯을 새로 만들었습니다: {StatsPath}");
-            return persisted;
         }
 
         // ── 카메라 ──
