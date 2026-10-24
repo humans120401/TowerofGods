@@ -1,6 +1,7 @@
 using RT.Data;
 using RT.Player;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace RT.Game
 {
@@ -65,6 +66,9 @@ namespace RT.Game
                 : "-";
 
             string text =
+                // 어느 씬인지 먼저 보여 준다.
+                // 1단계 씬을 켜 놓고 "스킬이 안 나온다"고 헤매기 쉽다.
+                $"<color=#8cf>씬  {SceneManager.GetActiveScene().name}</color>\n" +
                 $"<b>{player.CurrentState}</b>   속도 x{v.x,6:0.0} y{v.y,6:0.0}\n" +
                 $"접지 {(ctx.IsGrounded ? "O" : "X")}   " +
                 $"무적 {invincible}\n" +
@@ -87,8 +91,18 @@ namespace RT.Game
                 $"Z 공격  F 패링  Q/W/E 스킬\n" +
                 $"F1 이 창  F2 초기화</color>";
 
-            GUI.Box(new Rect(8, 8, 330, 300), GUIContent.none);
-            GUI.Label(new Rect(18, 14, 320, 290), text, _style);
+            // 높이를 글자에서 계산한다.
+            // 숫자로 박아 두면 줄을 한 줄 더할 때마다 아래가 잘린다 — 실제로 잘렸었다.
+            const float padX = 10f;
+            const float padY = 6f;
+            const float width = 330f;
+
+            float textHeight = _style.CalcHeight(new GUIContent(text), width - padX * 2f);
+
+            GUI.Box(new Rect(8f, 8f, width, textHeight + padY * 2f), GUIContent.none);
+            GUI.Label(
+                new Rect(8f + padX, 8f + padY, width - padX * 2f, textHeight),
+                text, _style);
         }
 
         private static string CooldownLine(PlayerContext ctx, SkillSlot slot, string label)

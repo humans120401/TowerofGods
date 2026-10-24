@@ -168,12 +168,27 @@ namespace RT.Game.EditorTools
 
             so.ApplyModifiedPropertiesWithoutUndo();
 
+            // 연결이 조용히 실패하면 게임에서는 '스킬 (없음)' 으로만 보인다.
+            // 원인을 찾기 어려우므로 여기서 바로 잡아 준다.
             var verify = new SerializedObject(brain);
+
             if (verify.FindProperty("stats").objectReferenceValue == null)
             {
                 Debug.LogError(
                     "[2단계 세팅] Stats 연결 실패. Player ▸ Player Brain ▸ Stats 칸에 " +
                     "Assets/_Project/Data/PlayerStats 를 직접 넣어 주세요.");
+            }
+
+            var verifySkills = verify.FindProperty("skills");
+
+            for (int i = 0; i < verifySkills.arraySize; i++)
+            {
+                if (verifySkills.GetArrayElementAtIndex(i).objectReferenceValue != null) continue;
+
+                Debug.LogError(
+                    $"[2단계 세팅] {(SkillSlot)i} 스킬 연결 실패. " +
+                    "Assets/_Project/Data 의 Skill_ 에셋을 " +
+                    "Player ▸ Player Brain ▸ Skills 에 직접 넣어 주세요.");
             }
 
             return brain;
