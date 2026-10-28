@@ -2,11 +2,23 @@
     "name": "RT.Tests.EditMode",
     "rootNamespace": "RT.Tests",
     "references": [
-        "UnityEngine.TestRunner", "UnityEditor.TestRunner",
-        "RT.Core", "RT.Data", "RT.Player", "RT.Telemetry", "RT.DDA.Model"
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner",
+        "RT.Core",
+        "RT.Data",
+        "RT.Player",
+        "RT.Boss",
+        "RT.Telemetry",
+        "RT.DDA.Model"
     ],
-    "includePlatforms": ["Editor"],
-    "precompiledReferences": ["nunit.framework.dll"],
-    "defineConstraints": ["UNITY_INCLUDE_TESTS"],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
     "autoReferenced": false
 }
